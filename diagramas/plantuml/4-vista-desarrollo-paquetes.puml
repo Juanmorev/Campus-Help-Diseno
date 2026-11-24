@@ -1,0 +1,70 @@
+@startuml vista-desarrollo
+!pragma layout smetana
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam package {
+  BackgroundColor #F3F3F3
+  BorderColor #555555
+}
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+}
+hide empty members
+hide circle
+title Vista de desarrollo - Paquetes y dependencias (com.campushelp)
+
+package "controller  (API REST)" as controller {
+  class UsuarioController
+  class IncidenciaController
+  class LugarController
+  class EstadisticaController
+}
+package "dto" as dto {
+  class "Solicitudes\nIncidenciaResponse\nReportes\nFiltroIncidencias\nErrorResponse" as DTOS
+}
+package "service  (casos de uso y permisos)" as service {
+  class IncidenciaService
+  class UsuarioService
+  class LugarService
+  class EstadisticaService
+  class EvidenciaService
+  class NotificacionService
+  class GeneradorCodigoService
+}
+package "exception" as exception {
+  class "ManejadorGlobalErrores\nReglaNegocioException\nAccesoDenegadoException\nRecursoNoEncontradoException\nArchivoInvalidoException" as EXC
+}
+package "repository  (MongoDB)" as repository {
+  interface UsuarioRepository
+  interface LugarRepository
+  interface IncidenciaRepository
+  interface NotificacionRepository
+}
+package "model  (dominio)" as model {
+  class "Incidencia, Usuario, Lugar\nEvidencia, Actualizacion\nNotificacion, Contador\n+ enums" as MOD
+}
+package "config" as config {
+  class "ConfiguracionApi\nDatosDemoInicializador" as CFG
+}
+
+UsuarioController -down-> UsuarioService
+IncidenciaController -down-> IncidenciaService
+LugarController -down-> LugarService
+LugarController -down-> EstadisticaService
+EstadisticaController -down-> EstadisticaService
+controller ..> DTOS
+IncidenciaService -right-> UsuarioService
+IncidenciaService -down-> EvidenciaService
+IncidenciaService -down-> NotificacionService
+IncidenciaService -down-> GeneradorCodigoService
+IncidenciaService -down-> IncidenciaRepository
+EstadisticaService -down-> IncidenciaRepository
+UsuarioService -down-> UsuarioRepository
+LugarService -down-> LugarRepository
+NotificacionService -down-> NotificacionRepository
+service ..> EXC
+repository -down-> MOD
+EXC ..> DTOS
+@enduml

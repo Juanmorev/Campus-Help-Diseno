@@ -1,0 +1,58 @@
+@startuml vista-funcional
+!pragma layout smetana
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam componentStyle uml2
+skinparam component {
+  BackgroundColor #FFF4D6
+  BorderColor #333333
+}
+title Vista funcional - Diagrama de componentes (CampusHelp)
+
+actor "Cliente HTTP\n(navegador / Postman)" as CLI
+
+() "/api/\nusuarios" as IU
+() "/api/\nincidencias" as II
+() "/api/lugares\n/api/mapa" as IL
+() "/api/\nestadisticas" as IE
+
+package "campushelp-api (Spring Boot)" {
+  component "Gestion de Usuarios\ny roles" as CU
+  component "Gestion de Incidencias\n(flujo y permisos)" as CI
+  component "Lugares y Mapa" as CL
+  component "Estadisticas" as CE
+  component "Evidencias\n(fotos)" as CV
+  component "Notificaciones" as CN
+  component "Generador de\nCodigos" as CG
+  component "Manejo de Errores" as CX
+  component "Persistencia\n(Spring Data MongoDB + GridFS)" as CP
+}
+
+database "MongoDB\ncampushelp_db" as DB
+
+CLI -down-> IU : JSON
+CLI -down-> II : JSON y fotos (multipart)
+CLI -down-> IL : JSON (mapa con colores)
+CLI -down-> IE : JSON
+
+IU -down- CU
+II -down- CI
+IL -down- CL
+IE -down- CE
+
+CI -left-> CU : verifica rol
+CI -down-> CV : guarda fotos
+CI -down-> CN : avisa al estudiante
+CI -down-> CG : codigo CH
+CI -right-> CL : lugar
+CE -left-> CL : color por lugar
+CX .up.> CI : errores JSON\n(400/403/404/409/413)
+
+CU -down-> CP
+CV -down-> CP
+CN -down-> CP
+CG -down-> CP
+CL -down-> CP
+CE -down-> CP
+CP -down-> DB : MongoDB Wire Protocol
+@enduml

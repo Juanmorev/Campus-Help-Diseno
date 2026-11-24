@@ -1,0 +1,28 @@
+@startuml vista-contexto
+!pragma layout smetana
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+}
+skinparam usecase {
+  BackgroundColor #E3F1E6
+  BorderColor #2E7D4F
+}
+title Vista de contexto - CampusHelp
+
+rectangle "Estudiante" as EST
+rectangle "Administrador\n(planta fisica)" as ADM
+rectangle "Personal de\nmantenimiento" as MNT
+usecase "CampusHelp\nSistema de gestion de\nincidencias del campus" as SIS
+
+EST -down-> SIS : Reporte: lugar, tipo, descripcion,\nfoto, prioridad\nInformacion adicional
+SIS -up-> EST : Codigo CH, estado\nNotificaciones
+
+ADM -right-> SIS : Validacion o cierre\nAsignacion de responsable\nCambios de estado
+SIS -left-> ADM : Reportes pendientes\nEstadisticas y mapa
+
+SIS -right-> MNT : Problemas asignados
+MNT -left-> SIS : Inicio, avances\ny solucion
+@enduml

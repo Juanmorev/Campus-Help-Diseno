@@ -1,0 +1,158 @@
+@startuml vista-logica
+!pragma layout smetana
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #E6F4EA
+  BorderColor #333333
+}
+hide empty members
+left to right direction
+title Vista logica - Diagrama de clases (CampusHelp)
+
+class Usuario <<Document>> {
+  -id : String
+  -nombre : String
+  -email : String
+  -codigo : String
+  -rol : Rol
+  -especialidad : TipoProblema
+  -activo : boolean
+  -fechaRegistro : Instant
+  +tieneRol(r : Rol) : boolean
+}
+
+class Lugar <<Document>> {
+  -id : String
+  -codigo : String
+  -nombre : String
+  -edificio : String
+  -piso : int
+  -x : double
+  -y : double
+  -activo : boolean
+}
+
+class Incidencia <<Document>> {
+  -id : String
+  -codigo : String
+  -lugarId : String
+  -tipo : TipoProblema
+  -descripcion : String
+  -prioridad : Prioridad
+  -estado : EstadoIncidencia
+  -reportadaPorId : String
+  -responsableId : String
+  -fechaReporte : Instant
+  -fechaRevision : Instant
+  -fechaAsignacion : Instant
+  -fechaInicioReparacion : Instant
+  -fechaSolucion : Instant
+  -fechaCierre : Instant
+  -motivoCierre : String
+  -solucion : String
+  +registrar(codigo, estudiante) : void
+  +iniciarRevision(admin) : void
+  +validarYAsignar(admin, responsable, prioridad) : void
+  +rechazar(admin, motivo) : void
+  +reasignar(admin, responsable) : void
+  +iniciarReparacion(mantenimiento, nota) : void
+  +registrarProgreso(mantenimiento, nota) : void
+  +solucionar(mantenimiento, descripcion) : void
+  +cambiarEstadoManual(admin, estado, motivo) : void
+  +agregarInformacion(autor, texto) : void
+  +agregarEvidencia(evidencia, autor) : void
+  +colorMapa() : ColorMapa
+  +horasHastaSolucion() : Double
+}
+
+class Evidencia {
+  -id : String
+  -nombreArchivo : String
+  -tipoContenido : String
+  -tamanoBytes : long
+  -subidaPorId : String
+  -fecha : Instant
+}
+
+class Actualizacion {
+  -fecha : Instant
+  -tipo : TipoActualizacion
+  -autorId : String
+  -mensaje : String
+  -estadoAnterior : EstadoIncidencia
+  -estadoNuevo : EstadoIncidencia
+}
+
+class Notificacion <<Document>> {
+  -id : String
+  -usuarioId : String
+  -incidenciaId : String
+  -codigoIncidencia : String
+  -mensaje : String
+  -fecha : Instant
+  -leida : boolean
+  +marcarLeida() : void
+}
+
+class Contador <<Document>> {
+  -id : String
+  -valor : long
+}
+
+enum Rol {
+  ESTUDIANTE
+  ADMINISTRADOR
+  MANTENIMIENTO
+}
+
+enum EstadoIncidencia {
+  REPORTADA
+  EN_REVISION
+  CERRADA
+  ASIGNADA
+  EN_REPARACION
+  SOLUCIONADA
+  +siguientesPermitidos() : Set
+  +esActiva() : boolean
+}
+
+enum Prioridad {
+  BAJA
+  MEDIA
+  ALTA
+  URGENTE
+}
+
+enum TipoProblema {
+  ELECTRICO
+  MOBILIARIO
+  TECNOLOGIA
+  SANITARIO
+  INFRAESTRUCTURA
+  LIMPIEZA
+  OTRO
+}
+
+enum ColorMapa {
+  ROJO
+  AMARILLO
+  VERDE
+  GRIS
+}
+
+Usuario "1" -- "0..*" Incidencia : reporta >
+Usuario "0..1" -- "0..*" Incidencia : repara >
+Lugar "1" -- "0..*" Incidencia : ocurre en <
+Incidencia "1" *-- "0..*" Evidencia : fotos
+Incidencia "1" *-- "1..*" Actualizacion : seguimiento
+Usuario "1" -- "0..*" Notificacion : recibe >
+Notificacion "0..*" --> "1" Incidencia : sobre
+Usuario --> Rol
+Incidencia --> EstadoIncidencia
+Incidencia --> Prioridad
+Incidencia --> TipoProblema
+Incidencia ..> ColorMapa : calcula
+Contador ..> Incidencia : genera codigo CH
+@enduml

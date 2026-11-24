@@ -1,0 +1,35 @@
+@startuml vista-despliegue
+!pragma layout smetana
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam node {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+}
+skinparam artifact {
+  BackgroundColor #EEF3FB
+  BorderColor #1A4FA0
+}
+title Vista de despliegue - CampusHelp
+
+node "<<device>>\nPC o celular del usuario" as PC {
+  node "<<execution environment>>\nNavegador web / Postman" as NAV {
+    artifact "<<artifact>>\nCampusHelp.postman_collection.json\nfotos de evidencia" as COL
+  }
+}
+
+node "<<device>>\nServidor de aplicaciones" as APP {
+  node "<<execution environment>>\nJVM Java 21" as JVM {
+    artifact "<<artifact>>\ncampushelp-api-1.0.0.jar\n(Spring Boot 3.5, puerto 8082)" as JAR
+  }
+}
+
+node "<<device>>\nServidor de base de datos" as DBS {
+  node "<<execution environment>>\nMongoDB 8" as MDB {
+    artifact "<<artifact>>\ncampushelp_db\n(usuarios, lugares, incidencias,\nnotificaciones, contadores, GridFS)" as BD
+  }
+}
+
+COL -right- JAR : HTTP/JSON :8082
+JAR -right- BD : TCP :27017
+@enduml
